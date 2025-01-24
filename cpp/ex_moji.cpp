@@ -17,6 +17,20 @@ HINSTANCE hInst;                                // 現在のインターフェ�
 WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキスト
 WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
 
+
+
+PAINTSTRUCT ps;
+HDC hdc;
+RECT rc;
+LPCTSTR lpszStr = TEXT("猫でもわかる\nWindowsプログラミング\n\t")
+TEXT("著者名");
+
+DRAWTEXTPARAMS dtp;
+COLORREF color{};
+
+LPCTSTR lpszStr2 = TEXT("xxxxxxxxxxxxxxxxxt");
+
+
 // このコード モジュールに含まれる関数の宣言を転送します:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -47,6 +61,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EXMOJI));
 
     MSG msg;
+    color = RGB(0, 0, 255);
 
     // メイン メッセージ ループ:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -140,14 +155,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    PAINTSTRUCT ps;
-    HDC hdc;
-    RECT rc;
-    LPCTSTR lpszStr = TEXT("猫でもわかる\nWindowsプログラミング\n\t")
-                       TEXT("著者名");
-
-
-    LPCTSTR lpszStr2 = TEXT("xxxxxxxxxxxxxxxxxt");
 
 
 //    LPCWSTR lpszStrW = TEXT("xx猫でもわかる\nWindowsプログラミングyy\n\t")
@@ -156,8 +163,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 //    wstring const aa = L"文字列を適当に設定した\n改行も入れた";
  //   aa = L"文字列を適当に設定した\n改行も入れた";
 
-    DRAWTEXTPARAMS dtp;
-    COLORREF color{};
 
     switch (message)
     {
@@ -192,7 +197,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             dtp.iTabLength = 4;
 
             hdc = BeginPaint(hWnd, &ps);
-            color = RGB(0, 0, 255);
             SetTextColor(hdc, color);
             DrawTextEx(hdc,
                 LPTSTR(lpszStr),
@@ -205,7 +209,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_RBUTTONDOWN:
     {
-        color = RGB(255, 0, 0);
+        int r = rand() % 255 + 1;
+        int g = rand() % 255 + 1;
+        int b = rand() % 255 + 1;
+        color = RGB(r, g, b);
+        InvalidateRect(hWnd, NULL, TRUE);
     }
     break;
     case WM_DESTROY:
