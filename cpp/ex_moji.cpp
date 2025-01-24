@@ -4,6 +4,12 @@
 #include "framework.h"
 #include "ex_moji.h"
 
+#include <string>
+#include <stdio.h>
+#include <iostream>
+
+using namespace std;
+
 #define MAX_LOADSTRING 100
 
 // グローバル変数:
@@ -97,8 +103,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // グローバル変数にインスタンス ハンドルを格納する
-   int iSizeW = 400;
-   int iSizeH = 300;
+   int iSizeW = 500;
+   int iSizeH = 400;
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, CW_USEDEFAULT, iSizeW, iSizeH, nullptr, nullptr, hInstance, nullptr);
@@ -110,7 +116,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
-
+#if 0 // p.49
+   {
+       LPCTSTR lpszTxt = TEXT("nekoでもわかるWindowsProgramming");
+       HDC hdc;
+       hdc = GetDC(hWnd);
+       TextOut(hdc, 10, 10, lpszTxt, lstrlen(lpszTxt));
+       ReleaseDC(hWnd, hdc);
+   }
+#endif
    return TRUE;
 }
 
@@ -126,6 +140,25 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    PAINTSTRUCT ps;
+    HDC hdc;
+    RECT rc;
+    LPCTSTR lpszStr = TEXT("猫でもわかる\nWindowsプログラミング\n\t")
+                       TEXT("著者名");
+
+
+    LPCTSTR lpszStr2 = TEXT("xxxxxxxxxxxxxxxxxt");
+
+
+//    LPCWSTR lpszStrW = TEXT("xx猫でもわかる\nWindowsプログラミングyy\n\t")
+//                        TEXT("aa著者名bb");
+
+//    wstring const aa = L"文字列を適当に設定した\n改行も入れた";
+ //   aa = L"文字列を適当に設定した\n改行も入れた";
+
+    DRAWTEXTPARAMS dtp;
+    COLORREF color{};
+
     switch (message)
     {
     case WM_COMMAND:
@@ -146,13 +179,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: HDC を使用する描画コードをここに追加してください...
+        
+
+        //LPCTSTR lpszStr = TEXT("猫でもわかる\nWindowsプログラミング\n\t");
+
+
+        // TODO: HDC を使用する描画コードをここに追加してください...
+            GetClientRect(hWnd, &rc);
+            dtp.cbSize = sizeof(DRAWTEXTPARAMS);
+            dtp.iLeftMargin = 20;
+            dtp.iRightMargin = 20;
+            dtp.iTabLength = 4;
+
+            hdc = BeginPaint(hWnd, &ps);
+            color = RGB(0, 0, 255);
+            SetTextColor(hdc, color);
+            DrawTextEx(hdc,
+                LPTSTR(lpszStr),
+                -1,
+                &rc,
+                DT_EXPANDTABS | DT_WORDBREAK | DT_TABSTOP,
+                &dtp);
             EndPaint(hWnd, &ps);
-        }
+        
         break;
+    case WM_RBUTTONDOWN:
+    {
+        color = RGB(255, 0, 0);
+    }
+    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
